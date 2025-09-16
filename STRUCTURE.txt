@@ -1,0 +1,38 @@
+
+========================================
+   STRUCTURE DU PROJET BIZERTA_RENTAL
+========================================
+
+bizerta-rental/
+├── package.json
+├── README.md
+├── install.bat
+├── start.bat
+├── STRUCTURE.txt
+├── backend/
+│   ├── package.json
+│   ├── .env
+│   ├── server.js
+│   ├── config/
+│   ├── middleware/
+│   └── routes/
+├── frontend/
+│   ├── package.json
+│   ├── .env
+│   ├── tailwind.config.js
+│   ├── public/
+│   │   └── index.html
+│   └── src/
+│       ├── index.js
+│       ├── App.js
+│       ├── index.css
+│       ├── components/
+│       ├── pages/
+│       └── services/
+└── database/
+    └── schema-simple.sql
+
+PROCHAINES ETAPES:
+1. Exécutez install.bat pour installer les dépendances
+2. Configurez la base de données avec database\schema-simple.sql
+3. Exécutez start.bat pour démarrer l'application
