@@ -322,7 +322,7 @@ const HomePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { name: 'Bizerte Centre', image: 'https://images.unsplash.com/photo-1539650116574-75c0c6d73ffe?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' },
-              { name: 'Corniche', image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' },
+              { name: 'Corniche', image: 'https://img.cava.tn/cava/items/14eea6b2-c179-4f52-9860-e49cc96c75e9/1747927361248.webpixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' },
               { name: 'Ras Jebel', image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' },
               { name: 'Cap Blanc', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' }
             ].map((destination) => (
