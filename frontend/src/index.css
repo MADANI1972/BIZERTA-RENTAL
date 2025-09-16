@@ -207,7 +207,7 @@ main {
 
 /* Responsive utilities */
 @media (max-width: 640px) {
-  .mobile-hidden { }
+  .mobile-hidden { 
     display: none;
 }
 }
