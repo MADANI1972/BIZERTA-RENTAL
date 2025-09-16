@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Search, MapPin, Star, Users, Bed, ArrowRight, Shield, Heart, Award, Menu, X, User, Home } from 'lucide-react';
-
+import { Search, MapPin, Star, Users, Bed, ArrowRight, Shield, Heart, Award, Menu, X, Home } from 'lucide-react';
 function App() {
   return (
     <Router>
