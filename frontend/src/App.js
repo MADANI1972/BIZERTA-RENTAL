@@ -414,7 +414,5 @@ const Footer = () => (
         <p className="text-gray-400">© 2024 Bizerta_Rental. Tous droits réservés.</p>
       </div>
     </div>
-  </div>
+  </footer>
 );
-
-export default App;
