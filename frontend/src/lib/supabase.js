@@ -1,9 +1,9 @@
 // src/lib/supabase.js
 import { createClient } from '@supabase/supabase-js'
 
-// REMPLACEZ CES VALEURS PAR VOS VRAIES CLÉS SUPABASE
-const supabaseUrl = 'YOUR_SUPABASE_PROJECT_URL' // Exemple: https://abcdefghijk.supabase.co
-const supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY' // Votre clé publique très longue
+// VOS CLÉS SUPABASE
+const supabaseUrl = 'https://qmulybymwxgesojuyuyg.supabase.co'
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFtdWx5Ynltd3hnZXNvanV5dXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgxMjc0NTYsImV4cCI6MjA3MzcwMzQ1Nn0.vorX3mUF4fWj508McVcOXD5WlOOwH6v8jmQF_DFLLig'
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
