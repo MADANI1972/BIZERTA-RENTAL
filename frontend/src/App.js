@@ -1,3 +1,6 @@
+const supabaseUrl = 'https://pxgeckzjsavfzzrwztcd.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4Z2Vja3pqc2F2Znp6cnd6dGNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc3MDg5NTEsImV4cCI6MjA3MzI4NDk1MX0.DM3tOiRRMX0pYQa6bxiSqOdH6e6PSPqSzAj8BE3hbco';
+
 import React, { useState } from 'react';
 import { Search, MapPin, Star, Users, Bed, ArrowRight, Shield, Heart, Award, Menu, X, Home, Filter, Phone, Mail, Wifi, Car, Utensils, Tv, Coffee, Bath, Waves, Euro, ChevronLeft, ChevronRight, Send, CheckCircle } from 'lucide-react';
 
