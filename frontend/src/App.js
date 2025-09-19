@@ -22,14 +22,26 @@ const supabaseAuth = {
 };
 
 const App = () => {
-  const [currentPage, setCurrentPage] = useState('home');
+  // États principaux avec détection de page basée sur l'URL
+  const [currentPage, setCurrentPage] = useState(() => {
+    const path = window.location.pathname;
+    if (path === '/login') return 'login';
+    if (path === '/register') return 'register';
+    if (path === '/host') return 'host';
+    if (path === '/dashboard') return 'dashboard';
+    if (path === '/admin') return 'admin';
+    if (path === '/properties') return 'properties';
+    if (path.startsWith('/property/')) return 'property';
+    return 'home';
+  });
+  
   const [user, setUser] = useState(null);
   const [properties, setProperties] = useState([
     {
       id: 1,
       title: "Villa Vue Mer - Corniche Bizerte",
       location: "Corniche de Bizerte",
-      price: 180,
+      price: 300,
       rating: 4.8,
       reviews: 24,
       images: ["https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400", "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=400"],
@@ -45,23 +57,42 @@ const App = () => {
     },
     {
       id: 2,
-      title: "Appartement Médina Authentique",
-      location: "Médina de Bizerte",
-      price: 90,
-      rating: 4.6,
-      reviews: 18,
-      images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400", "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400"],
-      amenities: ['wifi', 'air_conditioning', 'kitchen'],
-      bedrooms: 2,
-      bathrooms: 1,
-      guests: 4,
-      type: 'apartment',
-      neighborhood: 'medina',
+      title: "Villa Prestige Bizerte",
+      location: "Hammamet",
+      price: 450,
+      rating: 5.0,
+      reviews: 12,
+      images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400", "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400"],
+      amenities: ['wifi', 'air_conditioning', 'kitchen', 'parking'],
+      bedrooms: 4,
+      bathrooms: 3,
+      guests: 8,
+      type: 'villa',
+      neighborhood: 'lac',
       owner: { id: 2, name: "Fatma Trabelsi", phone: "+216 25 987 654" },
-      description: "Charmant appartement traditionnel au cœur de la médina historique de Bizerte. Architecture authentique avec tout le confort moderne.",
-      features: ["Centre historique", "Architecture traditionnelle", "Proximité souks", "Calme", "Authentique"]
+      description: "Villa de prestige avec piscine privée et architecture moderne. Parfaite pour des vacances luxueuses en famille.",
+      features: ["Piscine privée", "Architecture moderne", "Vue lac", "Jardin paysager", "Terrasse panoramique"]
+    },
+    {
+      id: 3,
+      title: "Sunset Villa - Sauna & Spa",
+      location: "Sousse",
+      price: 580,
+      rating: 4.8,
+      reviews: 18,
+      images: ["https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=400", "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400"],
+      amenities: ['wifi', 'air_conditioning', 'kitchen', 'parking'],
+      bedrooms: 5,
+      bathrooms: 4,
+      guests: 10,
+      type: 'villa',
+      neighborhood: 'corniche',
+      owner: { id: 3, name: "Karim Mansouri", phone: "+216 22 456 789" },
+      description: "Villa de luxe avec sauna et spa privé. Vue imprenable sur le coucher de soleil. Idéale pour une retraite relaxante.",
+      features: ["Sauna privé", "Spa", "Vue coucher de soleil", "Piscine à débordement", "Terrasse zen"]
     }
   ]);
+  
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [showPropertyForm, setShowPropertyForm] = useState(false);
   const [newProperty, setNewProperty] = useState({
@@ -93,46 +124,102 @@ const App = () => {
     kitchen: ChefHat
   };
 
+  // Categories data
+  const categories = [
+    { id: 'chalet', name: 'Chalet', icon: Home, color: 'bg-green-100 text-green-600' },
+    { id: 'pieds_eau', name: 'Pieds dans l\'eau', icon: Waves, color: 'bg-blue-100 text-blue-600' },
+    { id: 'budget', name: 'Petit budget', icon: '💰', color: 'bg-orange-100 text-orange-600' },
+    { id: 'luxe', name: 'Luxe', icon: Star, color: 'bg-purple-100 text-purple-600' },
+    { id: 'couple', name: 'Couple', icon: Heart, color: 'bg-pink-100 text-pink-600' },
+    { id: 'nature', name: 'Nature', icon: TreePine, color: 'bg-green-100 text-green-600' },
+    { id: 'capacite', name: 'Grande capacité', icon: Users, color: 'bg-blue-100 text-blue-600' },
+    { id: 'appartement', name: 'Appartement', icon: Building, color: 'bg-gray-100 text-gray-600' }
+  ];
+
+  // Fonction pour naviguer avec mise à jour de l'URL
+  const navigateTo = (page) => {
+    setCurrentPage(page);
+    window.history.pushState({}, '', `/${page === 'home' ? '' : page}`);
+  };
+
+  // Écouter les changements d'URL (bouton précédent/suivant du navigateur)
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      if (path === '/login') setCurrentPage('login');
+      else if (path === '/register') setCurrentPage('register');
+      else if (path === '/host') setCurrentPage('host');
+      else if (path === '/dashboard') setCurrentPage('dashboard');
+      else if (path === '/admin') setCurrentPage('admin');
+      else if (path === '/properties') setCurrentPage('properties');
+      else if (path.startsWith('/property/')) setCurrentPage('property');
+      else setCurrentPage('home');
+    };
+    
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   // Navigation Component
   const Navigation = () => (
-    <nav className="bg-white shadow-md fixed top-0 w-full z-50">
+    <nav className="bg-white shadow-sm fixed top-0 w-full z-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <div 
-              onClick={() => setCurrentPage('home')}
-              className="flex items-center space-x-2 cursor-pointer"
+              onClick={() => navigateTo('home')}
+              className="flex items-center space-x-3 cursor-pointer"
             >
-              <Home className="h-8 w-8 text-blue-600" />
-              <span className="text-xl font-bold text-gray-900">Bizerta Rental</span>
+              <div className="w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-lg">B</span>
+              </div>
+              <span className="text-xl font-bold text-gray-900">Bizerta Location</span>
             </div>
           </div>
           
           <div className="hidden md:flex items-center space-x-8">
             <button 
-              onClick={() => setCurrentPage('home')}
-              className={`${currentPage === 'home' ? 'text-blue-600' : 'text-gray-700'} hover:text-blue-600`}
+              onClick={() => navigateTo('home')}
+              className={`${currentPage === 'home' ? 'text-teal-600 font-medium' : 'text-gray-700'} hover:text-teal-600 transition-colors`}
             >
               Accueil
+            </button>
+            <button 
+              onClick={() => navigateTo('properties')}
+              className={`${currentPage === 'properties' ? 'text-teal-600 font-medium' : 'text-gray-700'} hover:text-teal-600 transition-colors`}
+            >
+              Propriétés
+            </button>
+            <button 
+              onClick={() => navigateTo('about')}
+              className={`${currentPage === 'about' ? 'text-teal-600 font-medium' : 'text-gray-700'} hover:text-teal-600 transition-colors`}
+            >
+              À propos
+            </button>
+            <button 
+              onClick={() => navigateTo('contact')}
+              className={`${currentPage === 'contact' ? 'text-teal-600 font-medium' : 'text-gray-700'} hover:text-teal-600 transition-colors`}
+            >
+              Contact
             </button>
             {user && (
               <>
                 <button 
-                  onClick={() => setCurrentPage('host')}
-                  className={`${currentPage === 'host' ? 'text-blue-600' : 'text-gray-700'} hover:text-blue-600`}
+                  onClick={() => navigateTo('host')}
+                  className={`${currentPage === 'host' ? 'text-teal-600 font-medium' : 'text-gray-700'} hover:text-teal-600 transition-colors`}
                 >
                   Devenir Hôte
                 </button>
                 <button 
-                  onClick={() => setCurrentPage('dashboard')}
-                  className={`${currentPage === 'dashboard' ? 'text-blue-600' : 'text-gray-700'} hover:text-blue-600`}
+                  onClick={() => navigateTo('dashboard')}
+                  className={`${currentPage === 'dashboard' ? 'text-teal-600 font-medium' : 'text-gray-700'} hover:text-teal-600 transition-colors`}
                 >
                   Mon Compte
                 </button>
                 {user.role === 'admin' && (
                   <button 
-                    onClick={() => setCurrentPage('admin')}
-                    className={`${currentPage === 'admin' ? 'text-blue-600' : 'text-gray-700'} hover:text-blue-600`}
+                    onClick={() => navigateTo('admin')}
+                    className={`${currentPage === 'admin' ? 'text-teal-600 font-medium' : 'text-gray-700'} hover:text-teal-600 transition-colors`}
                   >
                     Admin
                   </button>
@@ -146,8 +233,8 @@ const App = () => {
               <div className="flex items-center space-x-4">
                 <span className="text-gray-700">Bonjour, {user.email}</span>
                 <button 
-                  onClick={() => { setUser(null); setCurrentPage('home'); }}
-                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+                  onClick={() => { setUser(null); navigateTo('home'); }}
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
                 >
                   Se déconnecter
                 </button>
@@ -155,14 +242,14 @@ const App = () => {
             ) : (
               <div className="flex items-center space-x-2">
                 <button 
-                  onClick={() => setCurrentPage('login')}
-                  className="text-gray-700 hover:text-blue-600"
+                  onClick={() => navigateTo('login')}
+                  className="text-gray-700 hover:text-teal-600 transition-colors"
                 >
                   Se connecter
                 </button>
                 <button 
-                  onClick={() => setCurrentPage('register')}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                  onClick={() => navigateTo('register')}
+                  className="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition-colors"
                 >
                   S'inscrire
                 </button>
@@ -176,146 +263,205 @@ const App = () => {
 
   // Home Page Component
   const HomePage = () => (
-    <div className="pt-16">
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-        <div className="absolute inset-0 bg-black opacity-30"></div>
-        <div className="relative max-w-7xl mx-auto px-4 py-24 text-center">
-          <h1 className="text-5xl font-bold mb-6">
-            Découvrez Bizerte Autrement
-          </h1>
-          <p className="text-xl mb-8 max-w-3xl mx-auto">
-            Louez directement auprès des propriétaires locaux. Villas, appartements et maisons authentiques dans la perle du nord tunisien.
-          </p>
-          
+    <div className="pt-16 bg-gray-50 min-h-screen">
+      {/* Hero Section with Search */}
+      <div className="bg-gradient-to-br from-teal-400 to-teal-600 py-16">
+        <div className="max-w-6xl mx-auto px-4">
           {/* Search Form */}
-          <div className="bg-white rounded-lg p-6 max-w-4xl mx-auto shadow-xl">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="flex items-center space-x-2 border rounded-lg p-3">
-                <MapPin className="h-5 w-5 text-gray-400" />
-                <select className="w-full bg-transparent outline-none text-gray-700">
-                  <option>Tous les quartiers</option>
-                  {neighborhoods.map(n => (
-                    <option key={n.id} value={n.id}>{n.name}</option>
-                  ))}
-                </select>
+          <div className="bg-white rounded-2xl p-8 shadow-xl">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Emplacement</label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <select className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white text-gray-700">
+                    <option>Choisir le lieu</option>
+                    {neighborhoods.map(n => (
+                      <option key={n.id} value={n.id}>{n.name}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
               
-              <div className="flex items-center space-x-2 border rounded-lg p-3">
-                <Calendar className="h-5 w-5 text-gray-400" />
-                <input 
-                  type="date" 
-                  className="w-full bg-transparent outline-none text-gray-700"
-                  placeholder="Arrivée" 
-                />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Arrivée</label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <input 
+                    type="text" 
+                    placeholder="jj/mm/aaaa"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
               </div>
               
-              <div className="flex items-center space-x-2 border rounded-lg p-3">
-                <Calendar className="h-5 w-5 text-gray-400" />
-                <input 
-                  type="date" 
-                  className="w-full bg-transparent outline-none text-gray-700"
-                  placeholder="Départ" 
-                />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Départ</label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <input 
+                    type="text" 
+                    placeholder="jj/mm/aaaa"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
               </div>
               
-              <div className="flex items-center space-x-2 border rounded-lg p-3">
-                <Users className="h-5 w-5 text-gray-400" />
-                <select className="w-full bg-transparent outline-none text-gray-700">
-                  <option>2 voyageurs</option>
-                  <option>4 voyageurs</option>
-                  <option>6 voyageurs</option>
-                  <option>8+ voyageurs</option>
-                </select>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Invités</label>
+                <div className="relative">
+                  <Users className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <select className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white text-gray-700">
+                    <option>1 invité</option>
+                    <option>2 invités</option>
+                    <option>4 invités</option>
+                    <option>6 invités</option>
+                    <option>8+ invités</option>
+                  </select>
+                </div>
               </div>
             </div>
             
-            <button className="w-full mt-4 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold">
-              <Search className="h-5 w-5 inline mr-2" />
+            <button className="w-full mt-6 bg-teal-500 text-white py-4 rounded-lg hover:bg-teal-600 font-semibold text-lg transition-colors flex items-center justify-center">
+              <Search className="h-5 w-5 mr-2" />
               Rechercher
             </button>
           </div>
         </div>
       </div>
 
-      {/* Quartiers de Bizerte */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12">Quartiers de Bizerte</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {neighborhoods.map(neighborhood => {
-            const Icon = neighborhood.icon;
+      {/* Categories */}
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6">
+          {categories.map(category => {
+            const Icon = typeof category.icon === 'string' ? null : category.icon;
             return (
-              <div key={neighborhood.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="h-48 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                  <Icon className="h-16 w-16 text-white" />
+              <div key={category.id} className="flex flex-col items-center space-y-3 cursor-pointer group">
+                <div className={`w-16 h-16 rounded-full flex items-center justify-center ${category.color} group-hover:scale-110 transition-transform`}>
+                  {Icon ? (
+                    <Icon className="h-8 w-8" />
+                  ) : (
+                    <span className="text-2xl">{category.icon}</span>
+                  )}
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">{neighborhood.name}</h3>
-                  <p className="text-gray-600">{neighborhood.description}</p>
-                </div>
+                <span className="text-sm font-medium text-gray-700 text-center group-hover:text-teal-600 transition-colors">
+                  {category.name}
+                </span>
               </div>
             );
           })}
         </div>
       </div>
 
-      {/* Propriétés en vedette */}
-      <div className="bg-gray-50 py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Propriétés en Vedette</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {properties.map(property => (
-              <PropertyCard key={property.id} property={property} onClick={() => {
-                setSelectedProperty(property);
-                setCurrentPage('property');
-              }} />
-            ))}
-          </div>
+      {/* Les Tendances */}
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <h2 className="text-3xl font-bold text-gray-900 mb-8">Les Tendances</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {properties.map(property => (
+            <TrendCard key={property.id} property={property} onClick={() => {
+              setSelectedProperty(property);
+              navigateTo('property');
+            }} />
+          ))}
         </div>
       </div>
     </div>
   );
 
-  // Property Card Component
-  const PropertyCard = ({ property, onClick }) => (
-    <div onClick={onClick} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
-      <div className="relative h-48">
+  // Properties Page Component
+  const PropertiesPage = () => (
+    <div className="pt-16 bg-gray-50 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Toutes les propriétés</h1>
+            <p className="text-gray-600 mt-2">Découvrez notre collection complète de propriétés à Bizerte</p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+              <Filter className="h-4 w-4" />
+              <span>Filtres</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Filtres rapides */}
+        <div className="mb-8">
+          <div className="flex flex-wrap gap-3">
+            {['Tous', 'Villa', 'Appartement', 'Maison', 'Studio'].map(type => (
+              <button
+                key={type}
+                className="px-4 py-2 border border-gray-300 rounded-full hover:border-teal-500 hover:text-teal-600 transition-colors"
+              >
+                {type}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Liste des propriétés */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {properties.map(property => (
+            <TrendCard key={property.id} property={property} onClick={() => {
+              setSelectedProperty(property);
+              navigateTo('property');
+            }} />
+          ))}
+        </div>
+
+        {/* Message si aucune propriété */}
+        {properties.length === 0 && (
+          <div className="text-center py-12">
+            <Home className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Aucune propriété trouvée</h3>
+            <p className="text-gray-600">Essayez de modifier vos critères de recherche.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  // Trend Card Component (New Modern Design)
+  const TrendCard = ({ property, onClick }) => (
+    <div onClick={onClick} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group">
+      <div className="relative h-64">
         <img 
           src={property.images[0]} 
           alt={property.title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        <button className="absolute top-3 right-3 p-2 bg-white rounded-full hover:bg-gray-100">
-          <Heart className="h-4 w-4 text-gray-600" />
-        </button>
+        <div className="absolute top-4 right-4 bg-white rounded-full px-3 py-1 flex items-center space-x-1 shadow-md">
+          <Star className="h-4 w-4 text-yellow-400 fill-current" />
+          <span className="text-sm font-semibold text-gray-700">{property.rating}</span>
+          <span className="text-sm text-gray-500">({property.reviews})</span>
+        </div>
       </div>
       
       <div className="p-6">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="text-lg font-semibold text-gray-900 truncate">{property.title}</h3>
-          <div className="flex items-center space-x-1">
-            <Star className="h-4 w-4 text-yellow-400 fill-current" />
-            <span className="text-sm text-gray-600">{property.rating}</span>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">{property.title}</h3>
+        <p className="text-gray-600 mb-4">{property.location}</p>
+        
+        <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
+          <div className="flex items-center space-x-4">
+            <span className="flex items-center">
+              <Users className="h-4 w-4 mr-1" />
+              {property.guests} Invités
+            </span>
+            <span className="flex items-center">
+              <Bed className="h-4 w-4 mr-1" />
+              {property.bedrooms} Lits
+            </span>
           </div>
         </div>
         
-        <p className="text-gray-600 mb-3 flex items-center">
-          <MapPin className="h-4 w-4 mr-1" />
-          {property.location}
-        </p>
-        
-        <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
-          <span className="flex items-center"><Bed className="h-4 w-4 mr-1" />{property.bedrooms} ch</span>
-          <span className="flex items-center"><Bath className="h-4 w-4 mr-1" />{property.bathrooms} sdb</span>
-          <span className="flex items-center"><Users className="h-4 w-4 mr-1" />{property.guests} pers</span>
-        </div>
-        
-        <div className="flex justify-between items-center">
-          <div>
-            <span className="text-xl font-bold text-gray-900">{property.price}€</span>
-            <span className="text-gray-600"> / nuit</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-baseline space-x-1">
+            <span className="text-2xl font-bold text-gray-900">TND {property.price}</span>
+            <span className="text-gray-600">Par nuit</span>
           </div>
-          <span className="text-sm text-gray-500">({property.reviews} avis)</span>
+          <button className="bg-teal-500 text-white px-6 py-2 rounded-lg hover:bg-teal-600 transition-colors font-medium">
+            Voir détails
+          </button>
         </div>
       </div>
     </div>
@@ -434,11 +580,11 @@ const App = () => {
                   </div>
                 </div>
                 <div className="mt-4 flex space-x-4">
-                  <button className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                  <button className="flex items-center space-x-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">
                     <Phone className="h-4 w-4" />
                     <span>Appeler</span>
                   </button>
-                  <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                  <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                     <Mail className="h-4 w-4" />
                     <span>Message</span>
                   </button>
@@ -451,7 +597,7 @@ const App = () => {
               <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-2xl font-bold">{selectedProperty.price}€</span>
+                    <span className="text-2xl font-bold">TND {selectedProperty.price}</span>
                     <span className="text-gray-600">/ nuit</span>
                   </div>
                   <div className="flex items-center text-sm text-gray-600">
@@ -468,7 +614,7 @@ const App = () => {
                         type="date"
                         value={checkIn}
                         onChange={(e) => setCheckIn(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -477,7 +623,7 @@ const App = () => {
                         type="date"
                         value={checkOut}
                         onChange={(e) => setCheckOut(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                       />
                     </div>
                   </div>
@@ -487,7 +633,7 @@ const App = () => {
                     <select
                       value={guests}
                       onChange={(e) => setGuests(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                     >
                       {[...Array(selectedProperty.guests)].map((_, i) => (
                         <option key={i + 1} value={i + 1}>{i + 1} voyageur{i > 0 ? 's' : ''}</option>
@@ -496,7 +642,7 @@ const App = () => {
                   </div>
                 </div>
 
-                <button className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold mb-4">
+                <button className="w-full bg-teal-500 text-white py-3 rounded-lg hover:bg-teal-600 font-semibold mb-4 transition-colors">
                   Réserver maintenant
                 </button>
 
@@ -539,11 +685,28 @@ const App = () => {
 
     const handleFiles = (files) => {
       const imageFiles = files.filter(file => file.type.startsWith('image/'));
-      const imageUrls = imageFiles.map(file => URL.createObjectURL(file));
+      
+      // En production, utilisez un service de stockage comme Supabase Storage
+      // Pour le moment, on utilise des URLs d'exemple
+      const placeholderImages = [
+        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400",
+        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400",
+        "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=400"
+      ];
+      
+      const imageUrls = imageFiles.length > 0 
+        ? imageFiles.map((_, index) => placeholderImages[index % placeholderImages.length])
+        : [];
+        
       setNewProperty(prev => ({
         ...prev,
         images: [...prev.images, ...imageUrls]
       }));
+      
+      // Notification pour l'utilisateur
+      if (imageFiles.length > 0) {
+        alert(`${imageFiles.length} image(s) ajoutée(s) avec succès !`);
+      }
     };
 
     const handleSubmit = () => {
@@ -578,8 +741,8 @@ const App = () => {
             <h2 className="text-2xl font-bold mb-4">Connexion requise</h2>
             <p className="text-gray-600 mb-6">Veuillez vous connecter pour ajouter une propriété</p>
             <button 
-              onClick={() => setCurrentPage('login')}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+              onClick={() => navigateTo('login')}
+              className="bg-teal-500 text-white px-6 py-2 rounded-lg hover:bg-teal-600 transition-colors"
             >
               Se connecter
             </button>
@@ -603,7 +766,7 @@ const App = () => {
                     type="text"
                     value={newProperty.title}
                     onChange={(e) => setNewProperty(prev => ({ ...prev, title: e.target.value }))}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                     placeholder="Villa vue mer - Corniche Bizerte"
                     required
                   />
@@ -615,7 +778,7 @@ const App = () => {
                     type="text"
                     value={newProperty.location}
                     onChange={(e) => setNewProperty(prev => ({ ...prev, location: e.target.value }))}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                     placeholder="Corniche de Bizerte"
                     required
                   />
@@ -628,7 +791,7 @@ const App = () => {
                   <select
                     value={newProperty.neighborhood}
                     onChange={(e) => setNewProperty(prev => ({ ...prev, neighborhood: e.target.value }))}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   >
                     {neighborhoods.map(n => (
                       <option key={n.id} value={n.id}>{n.name}</option>
@@ -641,7 +804,7 @@ const App = () => {
                   <select
                     value={newProperty.type}
                     onChange={(e) => setNewProperty(prev => ({ ...prev, type: e.target.value }))}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   >
                     <option value="apartment">Appartement</option>
                     <option value="villa">Villa</option>
@@ -658,7 +821,7 @@ const App = () => {
                   <select
                     value={newProperty.bedrooms}
                     onChange={(e) => setNewProperty(prev => ({ ...prev, bedrooms: parseInt(e.target.value) }))}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   >
                     {[1,2,3,4,5,6].map(n => (
                       <option key={n} value={n}>{n}</option>
@@ -671,7 +834,7 @@ const App = () => {
                   <select
                     value={newProperty.bathrooms}
                     onChange={(e) => setNewProperty(prev => ({ ...prev, bathrooms: parseInt(e.target.value) }))}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   >
                     {[1,2,3,4].map(n => (
                       <option key={n} value={n}>{n}</option>
@@ -684,7 +847,7 @@ const App = () => {
                   <select
                     value={newProperty.guests}
                     onChange={(e) => setNewProperty(prev => ({ ...prev, guests: parseInt(e.target.value) }))}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   >
                     {[1,2,3,4,5,6,7,8,9,10].map(n => (
                       <option key={n} value={n}>{n}</option>
@@ -693,13 +856,13 @@ const App = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Prix / nuit (€)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Prix / nuit (TND)</label>
                   <input
                     type="number"
                     value={newProperty.price}
                     onChange={(e) => setNewProperty(prev => ({ ...prev, price: e.target.value }))}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="150"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    placeholder="300"
                     required
                   />
                 </div>
@@ -712,7 +875,7 @@ const App = () => {
                   value={newProperty.description}
                   onChange={(e) => setNewProperty(prev => ({ ...prev, description: e.target.value }))}
                   rows={4}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   placeholder="Décrivez votre propriété, ses atouts, sa localisation..."
                   required
                 />
@@ -807,7 +970,7 @@ const App = () => {
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="w-full bg-blue-600 text-white py-4 rounded-lg hover:bg-blue-700 font-semibold text-lg"
+                className="w-full bg-teal-500 text-white py-4 rounded-lg hover:bg-teal-600 font-semibold text-lg transition-colors"
               >
                 <Plus className="h-5 w-5 inline mr-2" />
                 Publier ma propriété
@@ -830,7 +993,7 @@ const App = () => {
         checkIn: '2024-06-15',
         checkOut: '2024-06-20',
         guests: 4,
-        total: 900,
+        total: 2700,
         status: 'confirmed'
       }
     ]);
@@ -841,8 +1004,8 @@ const App = () => {
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">Connexion requise</h2>
             <button 
-              onClick={() => setCurrentPage('login')}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+              onClick={() => navigateTo('login')}
+              className="bg-teal-500 text-white px-6 py-2 rounded-lg hover:bg-teal-600 transition-colors"
             >
               Se connecter
             </button>
@@ -873,7 +1036,7 @@ const App = () => {
                       onClick={() => setActiveTab(tab.id)}
                       className={`flex items-center space-x-2 py-4 border-b-2 ${
                         activeTab === tab.id 
-                          ? 'border-blue-500 text-blue-600' 
+                          ? 'border-teal-500 text-teal-600' 
                           : 'border-transparent text-gray-500 hover:text-gray-700'
                       }`}
                     >
@@ -904,7 +1067,7 @@ const App = () => {
                       <input 
                         type="tel" 
                         placeholder="+216 XX XXX XXX"
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -912,7 +1075,7 @@ const App = () => {
                       <input 
                         type="text" 
                         placeholder="Votre nom complet"
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -920,11 +1083,11 @@ const App = () => {
                       <input 
                         type="text" 
                         placeholder="Bizerte"
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500"
                       />
                     </div>
                   </div>
-                  <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                  <button className="bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-600 transition-colors">
                     Sauvegarder les modifications
                   </button>
                 </div>
@@ -953,7 +1116,7 @@ const App = () => {
                               </div>
                             </div>
                             <div className="text-right">
-                              <div className="text-2xl font-bold">{booking.total}€</div>
+                              <div className="text-2xl font-bold">{booking.total} TND</div>
                               <div className={`px-3 py-1 rounded-full text-sm ${
                                 booking.status === 'confirmed' 
                                   ? 'bg-green-100 text-green-800' 
@@ -980,8 +1143,8 @@ const App = () => {
                   <div className="flex justify-between items-center">
                     <h2 className="text-2xl font-semibold">Mes propriétés</h2>
                     <button 
-                      onClick={() => setCurrentPage('host')}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+                      onClick={() => navigateTo('host')}
+                      className="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 flex items-center space-x-2 transition-colors"
                     >
                       <Plus className="h-4 w-4" />
                       <span>Ajouter une propriété</span>
@@ -1000,7 +1163,7 @@ const App = () => {
                           <div className="p-4">
                             <h3 className="font-semibold mb-2">{property.title}</h3>
                             <p className="text-gray-600 text-sm mb-2">{property.location}</p>
-                            <p className="font-bold">{property.price}€ / nuit</p>
+                            <p className="font-bold">{property.price} TND / nuit</p>
                             <div className="flex justify-between items-center mt-4">
                               <div className="flex items-center space-x-1">
                                 <Star className="h-4 w-4 text-yellow-400 fill-current" />
@@ -1027,8 +1190,8 @@ const App = () => {
                       <Home className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                       <p className="text-gray-500 mb-4">Vous n'avez pas encore de propriétés</p>
                       <button 
-                        onClick={() => setCurrentPage('host')}
-                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+                        onClick={() => navigateTo('host')}
+                        className="bg-teal-500 text-white px-6 py-2 rounded-lg hover:bg-teal-600 transition-colors"
                       >
                         Ajouter votre première propriété
                       </button>
@@ -1043,15 +1206,15 @@ const App = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-blue-50 rounded-lg p-6">
                       <h3 className="text-lg font-semibold text-blue-900 mb-2">Ce mois</h3>
-                      <p className="text-3xl font-bold text-blue-600">1,250€</p>
+                      <p className="text-3xl font-bold text-blue-600">3,250 TND</p>
                     </div>
                     <div className="bg-green-50 rounded-lg p-6">
                       <h3 className="text-lg font-semibold text-green-900 mb-2">Cette année</h3>
-                      <p className="text-3xl font-bold text-green-600">8,750€</p>
+                      <p className="text-3xl font-bold text-green-600">22,750 TND</p>
                     </div>
                     <div className="bg-purple-50 rounded-lg p-6">
                       <h3 className="text-lg font-semibold text-purple-900 mb-2">Total</h3>
-                      <p className="text-3xl font-bold text-purple-600">15,420€</p>
+                      <p className="text-3xl font-bold text-purple-600">45,420 TND</p>
                     </div>
                   </div>
                 </div>
@@ -1070,7 +1233,7 @@ const App = () => {
       totalProperties: properties.length,
       totalUsers: 156,
       totalBookings: 89,
-      revenue: 12750
+      revenue: 35750
     });
 
     if (!user || user.role !== 'admin') {
@@ -1126,7 +1289,7 @@ const App = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Revenus</p>
-                  <p className="text-3xl font-bold">{stats.revenue}€</p>
+                  <p className="text-3xl font-bold">{stats.revenue} TND</p>
                 </div>
                 <BarChart3 className="h-12 w-12 text-yellow-600" />
               </div>
@@ -1148,7 +1311,7 @@ const App = () => {
                     onClick={() => setActiveTab(tab.id)}
                     className={`py-4 border-b-2 ${
                       activeTab === tab.id 
-                        ? 'border-blue-500 text-blue-600' 
+                        ? 'border-teal-500 text-teal-600' 
                         : 'border-transparent text-gray-500 hover:text-gray-700'
                     }`}
                   >
@@ -1200,7 +1363,7 @@ const App = () => {
                               </div>
                             </td>
                             <td className="py-4 px-4">{property.owner?.name || 'N/A'}</td>
-                            <td className="py-4 px-4">{property.price}€/nuit</td>
+                            <td className="py-4 px-4">{property.price} TND/nuit</td>
                             <td className="py-4 px-4">
                               <div className="flex items-center">
                                 <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
@@ -1268,7 +1431,7 @@ const App = () => {
       const { user } = await supabaseAuth.signIn(email, password);
       if (user) {
         setUser(user);
-        setCurrentPage('dashboard');
+        navigateTo('dashboard');
       }
     };
 
@@ -1283,7 +1446,7 @@ const App = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 required
               />
             </div>
@@ -1293,13 +1456,13 @@ const App = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 required
               />
             </div>
             <button
               onClick={handleSubmit}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold"
+              className="w-full bg-teal-500 text-white py-3 rounded-lg hover:bg-teal-600 font-semibold transition-colors"
             >
               Se connecter
             </button>
@@ -1307,7 +1470,7 @@ const App = () => {
           <p className="text-center mt-4 text-gray-600">
             Pas de compte ? 
             <button 
-              onClick={() => setCurrentPage('register')}
+              onClick={() => navigateTo('register')}
               className="text-blue-600 hover:underline ml-1"
             >
               S'inscrire
@@ -1333,7 +1496,7 @@ const App = () => {
       const { user } = await supabaseAuth.signUp(email, password, { role });
       if (user) {
         setUser(user);
-        setCurrentPage('dashboard');
+        navigateTo('dashboard');
       }
     };
 
@@ -1348,7 +1511,7 @@ const App = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 required
               />
             </div>
@@ -1358,7 +1521,7 @@ const App = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 required
               />
             </div>
@@ -1368,7 +1531,7 @@ const App = () => {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 required
               />
             </div>
@@ -1377,7 +1540,7 @@ const App = () => {
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               >
                 <option value="guest">Louer une propriété</option>
                 <option value="host">Devenir hôte</option>
@@ -1385,7 +1548,7 @@ const App = () => {
             </div>
             <button
               onClick={handleSubmit}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold"
+              className="w-full bg-teal-500 text-white py-3 rounded-lg hover:bg-teal-600 font-semibold transition-colors"
             >
               S'inscrire
             </button>
@@ -1393,7 +1556,7 @@ const App = () => {
           <p className="text-center mt-4 text-gray-600">
             Déjà un compte ? 
             <button 
-              onClick={() => setCurrentPage('login')}
+              onClick={() => navigateTo('login')}
               className="text-blue-600 hover:underline ml-1"
             >
               Se connecter
@@ -1410,6 +1573,7 @@ const App = () => {
       <Navigation />
       
       {currentPage === 'home' && <HomePage />}
+      {currentPage === 'properties' && <PropertiesPage />}
       {currentPage === 'property' && <PropertyPage />}
       {currentPage === 'host' && <HostPage />}
       {currentPage === 'dashboard' && <DashboardPage />}
@@ -1423,8 +1587,10 @@ const App = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <Home className="h-8 w-8 text-blue-400" />
-                <span className="text-xl font-bold">Bizerta Rental</span>
+                <div className="w-8 h-8 bg-teal-400 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold">B</span>
+                </div>
+                <span className="text-xl font-bold">Bizerta Location</span>
               </div>
               <p className="text-gray-400">
                 La plateforme de location de vacances à Bizerte. 
@@ -1455,14 +1621,14 @@ const App = () => {
               <h3 className="font-semibold mb-4">Contact</h3>
               <ul className="space-y-2 text-gray-400">
                 <li>+216 XX XXX XXX</li>
-                <li>contact@bizerta-rental.tn</li>
+                <li>contact@bizerta-location.tn</li>
                 <li>Bizerte, Tunisie</li>
               </ul>
             </div>
           </div>
           
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 Bizerta Rental. Tous droits réservés.</p>
+            <p>&copy; 2024 Bizerta Location. Tous droits réservés.</p>
           </div>
         </div>
       </footer>
