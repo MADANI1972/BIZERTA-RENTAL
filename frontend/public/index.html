@@ -1,70 +1,271 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#2563eb" />
-    <meta name="description" content="Bizerta_Rental - Votre plateforme de location de vacances à Bizerte. Découvrez des hébergements uniques dans la plus belle ville côtière de Tunisie." />
-    <meta name="keywords" content="Bizerte, location vacances, Tunisia, hébergement, appartement, villa, corniche, médina" />
-    <meta name="author" content="Bizerta_Rental" />
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Bizerta_Rental - Location de vacances à Bizerte" />
-    <meta property="og:description" content="Découvrez des hébergements uniques à Bizerte. Appartements, villas et maisons de vacances dans la plus belle ville côtière de Tunisie." />
-    <meta property="og:image" content="%PUBLIC_URL%/og-image.jpg" />
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:title" content="Bizerta_Rental - Location de vacances à Bizerte" />
-    <meta property="twitter:description" content="Découvrez des hébergements uniques à Bizerte. Appartements, villas et maisons de vacances dans la plus belle ville côtière de Tunisie." />
-    <meta property="twitter:image" content="%PUBLIC_URL%/og-image.jpg" />
-    
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    
-    <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://images.unsplash.com">
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <title>Bizerta_Rental - Location de vacances à Bizerte, Tunisie</title>
-    
-    <!-- Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Bizerta_Rental",
-      "description": "Plateforme de location de vacances spécialisée dans la région de Bizerte, Tunisie",
-      "url": "https://your-domain.com",
-      "logo": "https://your-domain.com/logo.png",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Bizerte",
-        "addressCountry": "TN"
-      },
-      "sameAs": [
-        "https://facebook.com/bizertarental",
-        "https://instagram.com/bizertarental"
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#2563eb" />
+  
+  <!-- SEO Meta Tags -->
+  <title>Bizerta Rental - Location de Vacances à Bizerte, Tunisie</title>
+  <meta name="description" content="Découvrez les meilleures locations de vacances à Bizerte. Villas, appartements et maisons avec vue mer. Réservation directe auprès des propriétaires locaux." />
+  <meta name="keywords" content="bizerte, location vacances, tunisie, villa, appartement, corniche, médina, lac bizerte, réservation directe" />
+  <meta name="author" content="Bizerta Rental" />
+  <meta name="robots" content="index, follow" />
+  <meta name="language" content="French" />
+  <meta name="geo.region" content="TN-23" />
+  <meta name="geo.placename" content="Bizerte" />
+  <meta name="geo.position" content="37.2744;9.8739" />
+  <meta name="ICBM" content="37.2744, 9.8739" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://bizerta-rental.vercel.app/" />
+  <meta property="og:title" content="Bizerta Rental - Location de Vacances à Bizerte" />
+  <meta property="og:description" content="Découvrez les meilleures locations de vacances à Bizerte. Réservation directe auprès des propriétaires locaux." />
+  <meta property="og:image" content="https://bizerta-rental.vercel.app/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="Bizerta Rental" />
+  <meta property="og:locale" content="fr_FR" />
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://bizerta-rental.vercel.app/" />
+  <meta property="twitter:title" content="Bizerta Rental - Location de Vacances à Bizerte" />
+  <meta property="twitter:description" content="Découvrez les meilleures locations de vacances à Bizerte. Réservation directe auprès des propriétaires locaux." />
+  <meta property="twitter:image" content="https://bizerta-rental.vercel.app/twitter-image.jpg" />
+  
+  <!-- Favicons -->
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#2563eb" />
+  <meta name="msapplication-TileColor" content="#2563eb" />
+  <meta name="msapplication-config" content="/browserconfig.xml" />
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://bizerta-rental.vercel.app/" />
+  
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  
+  <!-- DNS Prefetch -->
+  <link rel="dns-prefetch" href="//pxgeckzjsavfzzrwztcd.supabase.co" />
+  <link rel="dns-prefetch" href="//vercel.app" />
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  
+  <!-- Structured Data - LocalBusiness -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Bizerta Rental",
+    "description": "Plateforme de location de vacances à Bizerte, Tunisie. Réservation directe auprès des propriétaires locaux.",
+    "url": "https://bizerta-rental.vercel.app",
+    "telephone": "+216-XX-XXX-XXX",
+    "email": "contact@bizerta-rental.tn",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Corniche de Bizerte",
+      "addressLocality": "Bizerte",
+      "addressRegion": "Bizerte",
+      "postalCode": "7000",
+      "addressCountry": "TN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "37.2744",
+      "longitude": "9.8739"
+    },
+    "openingHours": "Mo-Su 00:00-23:59",
+    "sameAs": [
+      "https://www.facebook.com/bizertarental",
+      "https://www.instagram.com/bizertarental",
+      "https://twitter.com/bizertarental"
+    ],
+    "serviceArea": {
+      "@type": "City",
+      "name": "Bizerte"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Locations de Vacances",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "Villa avec Vue Mer"
+          }
+        },
+        {
+          "@type": "Offer", 
+          "itemOffered": {
+            "@type": "Product",
+            "name": "Appartement Médina"
+          }
+        }
       ]
     }
-    </script>
-  </head>
-  <body>
-    <noscript>Vous devez activer JavaScript pour utiliser cette application.</noscript>
-    <div id="root"></div>
+  }
+  </script>
+
+  <!-- Structured Data - WebSite -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Bizerta Rental",
+    "url": "https://bizerta-rental.vercel.app",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://bizerta-rental.vercel.app/search?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <!-- Performance hints -->
+  <link rel="preload" href="/static/css/main.css" as="style" />
+  <link rel="preload" href="/static/js/main.js" as="script" />
+  
+  <!-- Security -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  
+  <!-- PWA -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Bizerta Rental" />
+  
+  <!-- Critical CSS inlined for performance -->
+  <style>
+    /* Critical styles for above-the-fold content */
+    * {
+      box-sizing: border-box;
+    }
     
-    <!-- Fallback for users with JavaScript disabled -->
-    <noscript>
-      <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
-        <h1>Bizerta_Rental</h1>
-        <p>Cette application nécessite JavaScript pour fonctionner correctement.</p>
-        <p>Veuillez activer JavaScript dans votre navigateur et recharger la page.</p>
-      </div>
-    </noscript>
-  </body>
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-color: #f9fafb;
+    }
+    
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f9fafb;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #e5e7eb;
+      border-top: 4px solid #2563eb;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <noscript>
+    <div style="padding: 20px; text-align: center; background: #fee2e2; color: #991b1b; font-family: sans-serif;">
+      <h2>JavaScript requis</h2>
+      <p>Vous devez activer JavaScript pour utiliser Bizerta Rental.</p>
+      <p>You need to enable JavaScript to run this app.</p>
+    </div>
+  </noscript>
+  
+  <!-- Loading spinner -->
+  <div id="loading" class="loading-spinner">
+    <div class="spinner"></div>
+  </div>
+  
+  <!-- Main React app container -->
+  <div id="root"></div>
+  
+  <!-- Hide loading spinner when React loads -->
+  <script>
+    window.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        const loading = document.getElementById('loading');
+        if (loading && window.React) {
+          loading.style.display = 'none';
+        }
+      }, 100);
+    });
+  </script>
+  
+  <!-- Analytics placeholder (replace with your analytics) -->
+  <script>
+    // Google Analytics or other analytics code
+    // Replace with your actual tracking code
+    console.log('Bizerta Rental - Analytics placeholder');
+  </script>
+  
+  <!-- Service Worker registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js')
+          .then(function(registration) {
+            console.log('SW registered: ', registration);
+          }, function(registrationError) {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+  </script>
+  
+  <!-- Performance monitoring -->
+  <script>
+    // Web Vitals monitoring
+    function vitals(metric) {
+      console.log('Web Vital:', metric);
+      // Send to analytics
+    }
+    
+    // Monitor Core Web Vitals
+    if ('PerformanceObserver' in window) {
+      try {
+        const observer = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            if (entry.entryType === 'navigation') {
+              vitals({
+                name: 'FCP',
+                value: entry.loadEventEnd - entry.loadEventStart
+              });
+            }
+          }
+        });
+        observer.observe({ entryTypes: ['navigation'] });
+      } catch (e) {
+        console.log('Performance monitoring not available');
+      }
+    }
+  </script>
+</body>
 </html>
