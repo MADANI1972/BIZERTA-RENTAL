@@ -14,7 +14,6 @@ export const authService = {
   // Inscription
   signUp: async (email, password, userData) => {
     try {
-      // 1. Créer l'utilisateur dans auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password
@@ -22,7 +21,6 @@ export const authService = {
 
       if (authError) throw authError;
 
-      // 2. Créer le profil
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .insert([{
@@ -58,7 +56,6 @@ export const authService = {
 
       if (authError) throw authError;
 
-      // Récupérer le profil complet
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -141,7 +138,6 @@ export const propertyService = {
         `)
         .eq('status', 'active');
 
-      // Filtres optionnels
       if (filters.location) {
         query = query.ilike('location', `%${filters.location}%`);
       }
@@ -162,7 +158,6 @@ export const propertyService = {
 
       if (error) throw error;
 
-      // Transformer les données pour correspondre au format de l'app
       const properties = data.map(prop => ({
         id: prop.id,
         title: prop.title,
@@ -181,8 +176,8 @@ export const propertyService = {
           phone: prop.profiles?.phone,
           email: prop.profiles?.email
         },
-        rating: 0, // À calculer depuis reviews
-        reviews: 0, // À calculer depuis reviews
+        rating: 0,
+        reviews: 0,
         features: []
       }));
 
@@ -228,7 +223,6 @@ export const propertyService = {
 
       if (error) throw error;
 
-      // Calculer la note moyenne
       const avgRating = data.reviews?.length > 0
         ? data.reviews.reduce((acc, r) => acc + r.rating, 0) / data.reviews.length
         : 0;
@@ -266,7 +260,6 @@ export const propertyService = {
   // Créer une nouvelle propriété
   create: async (propertyData, userId) => {
     try {
-      // 1. Créer la propriété
       const { data: property, error: propError } = await supabase
         .from('properties')
         .insert([{
@@ -280,14 +273,13 @@ export const propertyService = {
           price: propertyData.price,
           amenities: propertyData.amenities,
           host_id: userId,
-          status: 'pending' // En attente de validation admin
+          status: 'pending'
         }])
         .select()
         .single();
 
       if (propError) throw propError;
 
-      // 2. Ajouter les images
       if (propertyData.images && propertyData.images.length > 0) {
         const images = propertyData.images.map((url, index) => ({
           property_id: property.id,
@@ -306,6 +298,30 @@ export const propertyService = {
     } catch (error) {
       console.error('Erreur create property:', error);
       return { property: null, error };
+    }
+  },
+
+  // Upload d'image vers Supabase Storage
+  uploadImage: async (file) => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `properties/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('property-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('property-images')
+        .getPublicUrl(filePath);
+
+      return { url: publicUrl, error: null };
+    } catch (error) {
+      console.error('Erreur upload image:', error);
+      return { url: null, error };
     }
   },
 
@@ -341,30 +357,6 @@ export const propertyService = {
       console.error('Erreur delete property:', error);
       return { error };
     }
-  },
-
-  // Upload d'image vers Supabase Storage
-  uploadImage: async (file) => {
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `properties/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('property-images')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('property-images')
-        .getPublicUrl(filePath);
-
-      return { url: publicUrl, error: null };
-    } catch (error) {
-      console.error('Erreur upload image:', error);
-      return { url: null, error };
-    }
   }
 };
 
@@ -373,7 +365,6 @@ export const propertyService = {
 // ========================================
 
 export const bookingService = {
-  // Créer une réservation
   create: async (bookingData) => {
     try {
       const { data, error } = await supabase
@@ -399,7 +390,6 @@ export const bookingService = {
     }
   },
 
-  // Obtenir les réservations d'un utilisateur
   getByUser: async (userId) => {
     try {
       const { data, error } = await supabase
@@ -426,58 +416,14 @@ export const bookingService = {
       console.error('Erreur get bookings:', error);
       return { bookings: [], error };
     }
-  },
-
-  // Obtenir les réservations d'une propriété
-  getByProperty: async (propertyId) => {
-    try {
-      const { data, error } = await supabase
-        .from('bookings')
-        .select(`
-          *,
-          profiles!bookings_user_id_fkey (
-            first_name,
-            last_name,
-            email,
-            phone
-          )
-        `)
-        .eq('property_id', propertyId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return { bookings: data, error: null };
-    } catch (error) {
-      console.error('Erreur get property bookings:', error);
-      return { bookings: [], error };
-    }
-  },
-
-  // Mettre à jour le statut d'une réservation
-  updateStatus: async (bookingId, status) => {
-    try {
-      const { data, error } = await supabase
-        .from('bookings')
-        .update({ status })
-        .eq('id', bookingId)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return { booking: data, error: null };
-    } catch (error) {
-      console.error('Erreur update booking:', error);
-      return { booking: null, error };
-    }
   }
 };
 
 // ========================================
-// AVIS / REVIEWS
+// AVIS
 // ========================================
 
 export const reviewService = {
-  // Créer un avis
   create: async (reviewData) => {
     try {
       const { data, error } = await supabase
@@ -498,29 +444,6 @@ export const reviewService = {
       console.error('Erreur create review:', error);
       return { review: null, error };
     }
-  },
-
-  // Obtenir les avis d'une propriété
-  getByProperty: async (propertyId) => {
-    try {
-      const { data, error } = await supabase
-        .from('reviews')
-        .select(`
-          *,
-          profiles!reviews_user_id_fkey (
-            first_name,
-            last_name
-          )
-        `)
-        .eq('property_id', propertyId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return { reviews: data, error: null };
-    } catch (error) {
-      console.error('Erreur get reviews:', error);
-      return { reviews: [], error };
-    }
   }
 };
 
@@ -529,7 +452,6 @@ export const reviewService = {
 // ========================================
 
 export const adminService = {
-  // Obtenir les statistiques
   getStats: async () => {
     try {
       const { data, error } = await supabase
@@ -542,63 +464,6 @@ export const adminService = {
     } catch (error) {
       console.error('Erreur get stats:', error);
       return { stats: null, error };
-    }
-  },
-
-  // Obtenir toutes les propriétés (admin)
-  getAllProperties: async () => {
-    try {
-      const { data, error } = await supabase
-        .from('properties')
-        .select(`
-          *,
-          profiles!properties_host_id_fkey (
-            first_name,
-            last_name,
-            email
-          )
-        `)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return { properties: data, error: null };
-    } catch (error) {
-      console.error('Erreur get all properties:', error);
-      return { properties: [], error };
-    }
-  },
-
-  // Approuver/rejeter une propriété
-  updatePropertyStatus: async (propertyId, status) => {
-    try {
-      const { data, error } = await supabase
-        .from('properties')
-        .update({ status })
-        .eq('id', propertyId)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return { property: data, error: null };
-    } catch (error) {
-      console.error('Erreur update property status:', error);
-      return { property: null, error };
-    }
-  },
-
-  // Obtenir tous les utilisateurs
-  getAllUsers: async () => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return { users: data, error: null };
-    } catch (error) {
-      console.error('Erreur get users:', error);
-      return { users: [], error };
     }
   }
 };
